@@ -39,21 +39,25 @@ def scrape_website():
     title_label.config(text=title)
     summary_label.config(text=summary)
 
+    # adjust the GUI size automatically
+    root.update()
+    root.geometry("")
+
 # create the GUI
 root = tk.Tk()
 root.title("Web Scraper")
 
 # create the URL input box and scrape button
 url_input = tk.Entry(root)
-url_input.pack()
+url_input.pack(fill=tk.X, padx=10, pady=10)
 scrape_button = tk.Button(root, text="Scrape", command=scrape_website)
-scrape_button.pack()
+scrape_button.pack(padx=10, pady=10)
 
 # create the labels for the scraped information
 title_label = tk.Label(root, font=("Arial", 16, "bold"), fg="blue")
-title_label.pack()
+title_label.pack(fill=tk.X, padx=10, pady=10, expand=True)
 summary_label = tk.Label(root, font=("Arial", 12))
-summary_label.pack()
+summary_label.pack(fill=tk.X, padx=10, pady=10, expand=True)
 
 # start the GUI
 root.mainloop()
