@@ -1,6 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division, print_function, unicode_literals
-
 import requests
 from bs4 import BeautifulSoup
 import tkinter as tk
@@ -13,51 +10,56 @@ import nltk
 
 nltk.download('punkt')
 
-# set the summarizer language and create a summarizer object
-LANGUAGE = "english"
-SENTENCES_COUNT = 2
-stemmer = Stemmer(LANGUAGE)
-summarizer = Summarizer(stemmer)
-summarizer.stop_words = get_stop_words(LANGUAGE)
+class WebScraperGUI:
 
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Web Scraper")
 
+        self.LANGUAGE = "english"
+        self.SENTENCES_COUNT = 2
+        self.stemmer = Stemmer(self.LANGUAGE)
+        self.summarizer = Summarizer(self.stemmer)
+        self.summarizer.stop_words = get_stop_words(self.LANGUAGE)
 
-def scrape_website():
-    # get the URL from the user input
-    url = url_input.get()
+        self.url_input = tk.Entry(self.root)
+        self.url_input.pack(fill=tk.X, padx=10, pady=10)
 
-    # make a GET request to the URL and parse the HTML content with Beautiful Soup
-    response = requests.get(url)
-    parser = HtmlParser.from_url(url, Tokenizer(LANGUAGE))
-    soup = BeautifulSoup(response.content, 'html.parser')
+        self.scrape_button = tk.Button(self.root, text="Scrape", command=self.scrape_website)
+        self.scrape_button.pack(padx=10, pady=10)
 
-    # extract the important information from the page (for example, the title and summary)
-    title = soup.title.string
-    summary = summarizer(parser.document, SENTENCES_COUNT)
+        self.title_label = tk.Label(self.root, font=("Arial", 16, "bold"), fg="blue")
+        self.title_label.pack(fill=tk.X, padx=10, pady=10, expand=True)
 
-    # display the results in the GUI
-    title_label.config(text=title)
-    summary_label.config(text=summary)
+        self.summary_label = tk.Label(self.root, font=("Arial", 12))
+        self.summary_label.pack(fill=tk.X, padx=10, pady=10, expand=True)
 
-    # adjust the GUI size automatically
-    root.update()
-    root.geometry("")
+    def scrape_website(self):
+        # get the URL from the user input
+        url = self.url_input.get()
+
+        # make a GET request to the URL and parse the HTML content with Beautiful Soup
+        response = requests.get(url)
+        parser = HtmlParser.from_url(url, Tokenizer(self.LANGUAGE))
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # extract the important information from the page (for example, the title and summary)
+        title = soup.title.string
+        summary = self.summarizer(parser.document, self.SENTENCES_COUNT)
+
+        # display the results in the GUI
+        self.title_label.config(text=title)
+        self.summary_label.config(text=summary)
+
+        # adjust the GUI size automatically
+        self.root.update()
+        self.root.geometry("")
+
+    def run(self):
+        # start the GUI
+        self.root.mainloop()
 
 # create the GUI
 root = tk.Tk()
-root.title("Web Scraper")
-
-# create the URL input box and scrape button
-url_input = tk.Entry(root)
-url_input.pack(fill=tk.X, padx=10, pady=10)
-scrape_button = tk.Button(root, text="Scrape", command=scrape_website)
-scrape_button.pack(padx=10, pady=10)
-
-# create the labels for the scraped information
-title_label = tk.Label(root, font=("Arial", 16, "bold"), fg="blue")
-title_label.pack(fill=tk.X, padx=10, pady=10, expand=True)
-summary_label = tk.Label(root, font=("Arial", 12))
-summary_label.pack(fill=tk.X, padx=10, pady=10, expand=True)
-
-# start the GUI
-root.mainloop()
+scraper_gui = WebScraperGUI(root)
+scraper_gui.run()
